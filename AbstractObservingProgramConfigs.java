@@ -26,4 +26,17 @@ public abstract class AbstractObservingProgramConfigs {
     public static LightType[] getLightType() {
         return LightType.values();
     }
+
+    private double foldMirrorDegree;
+    
+    public double getFoldMirrorDegree() {
+        return foldMirrorDegree;
+    }
+
+    public void setFoldMirrorDegree(double foldMirrorDegree) {
+        this.foldMirrorDegree = foldMirrorDegree;
+    }
+    public abstract FoldMirrorType getFoldMirrorType();
+    public abstract CalibrationUnit getCalibrationUnit();
+    public abstract LightType getLightType();
 }
