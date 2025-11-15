@@ -35,4 +35,10 @@ public class SciencePlan extends AbstractSciencePlan {
         this.status = status;
         this.astronomer = astronomer;
     }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 }
