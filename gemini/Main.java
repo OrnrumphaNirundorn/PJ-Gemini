@@ -13,10 +13,15 @@ public class Main {
     }
 
     private static void testValidateSciencePlan1() {
+        Astronomer astronomer1 = new Astronomer();
+        astronomer1.setId(1);
+        astronomer1.setFirstName("JJ");
+        astronomer1.setLastName("JJ");
+
         SciencePlan sp = new SciencePlan();
         sp.setPlanNo(1);
         sp.setPlanName("test1");
-        sp.setCreator("JJ");
+        sp.setCreator(astronomer1);
         sp.setFunding(200.00);
         sp.setObjective("To test");
         sp.setTarget(StarSystem.CONSTELLATIONS.Carina);
@@ -37,10 +42,15 @@ public class Main {
     }
 
     private static void testValidateSciencePlan2() {
+        Astronomer astronomer2 = new Astronomer();
+        astronomer2.setId(2);
+        astronomer2.setFirstName("JN");
+        astronomer2.setLastName("JN");
+
         SciencePlan sp = new SciencePlan();
         sp.setPlanNo(2);
         sp.setPlanName("test2");
-        sp.setCreator("JN");
+        sp.setCreator(astronomer2);
         sp.setFunding(200.00);
         sp.setObjective("To test");
         sp.setTarget(StarSystem.CONSTELLATIONS.Carina);
