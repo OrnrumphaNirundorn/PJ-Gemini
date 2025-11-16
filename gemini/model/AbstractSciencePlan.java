@@ -1,11 +1,13 @@
 package gemini.model;
 
+import gemini.Astronomer;
+
 import java.time.LocalDate;
 
 public abstract class AbstractSciencePlan {
     private int planNo;
     private String planName;
-    private String creator;
+    private Astronomer creator;
     private double funding;
     private String objective;
     private LocalDate startDate;
@@ -17,7 +19,7 @@ public abstract class AbstractSciencePlan {
     public AbstractSciencePlan(
             int planNo,
             String planName,
-            String creator,
+            Astronomer creator,
             double funding,
             String objective,
             LocalDate startDate,
@@ -42,7 +44,7 @@ public abstract class AbstractSciencePlan {
 
     public int getPlanNo() { return planNo; }
     public String getPlanName() { return planName; }
-    public String getCreator() { return creator; }
+    public Astronomer getCreator() { return creator; }
     public double getFunding() { return funding; }
     public String getObjective() { return objective; }
     public LocalDate getStartDate() { return startDate; }
@@ -53,7 +55,7 @@ public abstract class AbstractSciencePlan {
 
     public void setPlanNo(int planNo) { this.planNo = planNo; }
     public void setPlanName(String planName) { this.planName = planName; }
-    public void setCreator(String creator) { this.creator = creator; }
+    public void setCreator(Astronomer creator) { this.creator = creator; }
     public void setFunding(double funding) { this.funding = funding; }
     public void setObjective(String objective) { this.objective = objective; }
     public void setStartDate(String startDate) {
