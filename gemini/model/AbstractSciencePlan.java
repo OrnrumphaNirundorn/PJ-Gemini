@@ -11,7 +11,7 @@ public abstract class AbstractSciencePlan {
     private LocalDate startDate;
     private LocalDate endDate;
     private String telescope;
-    private String target;
+    private StarSystem target;
     private STATUS status;
 
     public AbstractSciencePlan(
@@ -23,7 +23,7 @@ public abstract class AbstractSciencePlan {
             LocalDate startDate,
             LocalDate endDate,
             String telescope,
-            String target,
+            StarSystem target,
             STATUS status
     ) {
         this.planNo = planNo;
@@ -48,7 +48,7 @@ public abstract class AbstractSciencePlan {
     public LocalDate getStartDate() { return startDate; }
     public LocalDate getEndDate() { return endDate; }
     public String getTelescope() { return telescope; }
-    public String getTarget() { return target; }
+    public StarSystem getTarget() { return target; }
     public STATUS getStatus() { return status; }
 
     public void setPlanNo(int planNo) { this.planNo = planNo; }
@@ -59,7 +59,7 @@ public abstract class AbstractSciencePlan {
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
     public void setTelescope(String telescope) { this.telescope = telescope; }
-    public void setTarget(String target) { this.target = target; }
+    public void setTarget(StarSystem target) { this.target = target; }
     public void setStatus(STATUS status) { this.status = status; }
 
     /**
