@@ -6,7 +6,6 @@ import gemini.model.StarSystem;
 import java.time.LocalDate;
 
 public class SciencePlan extends AbstractSciencePlan {
-    private StarSystem starSystem;
     private AstronomicalData astronomicalData;
 
     public SciencePlan(
@@ -18,13 +17,11 @@ public class SciencePlan extends AbstractSciencePlan {
             LocalDate startDate,
             LocalDate endDate,
             String telescope,
-            String target,
+            StarSystem target,
             STATUS status,
-            StarSystem starSystem,
             AstronomicalData astronomicalData
     ) {
         super(planNo, planName, creator, funding, objective, startDate, endDate, telescope, target, status);
-        this.starSystem = starSystem;
         this.astronomicalData = astronomicalData;
     }
 
