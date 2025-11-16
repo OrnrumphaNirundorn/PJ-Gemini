@@ -11,7 +11,7 @@ public class SciencePlan extends AbstractSciencePlan {
     public SciencePlan(
             int planNo,
             String planName,
-            String creator,
+            Astronomer creator,
             double funding,
             String objective,
             LocalDate startDate,
