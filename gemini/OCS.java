@@ -215,17 +215,23 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
             isValid = false;
             validationMessages.append(" - Invalid Module Content value ").append(moduleContent).append(". Expected values: 1, 2, 3, or 4.\n");
         }
-        
+
         if (telePositionPair == null || telePositionPair.length == 0) {
             isValid = false;
             validationMessages.append(" - Tele Position Pair list is missing or empty. This is required for telescope movement.\n");
         }
 
         if (isValid) {
-            ObservingProgram op = new ObservingProgram(sp, opticsPrimary, fStop, opticsSecondaryRMS,
-                                                       scienceFoldMirrorDegree, scienceFoldMirrorType,
-                                                       moduleContent, calibrationUnit, lightType,
-                                                       telePositionPair, so.getAstronomerID());
+            ObservingProgramConfigs config = new ObservingProgramConfigs(scienceFoldMirrorDegree, scienceFoldMirrorType, calibrationUnit, lightType);
+            TelePositionPair[] telePositionPairList = (TelePositionPair[]) telePositionPair;
+
+            ObservingProgram op = new ObservingProgram(
+                    sp.getTelescope(),
+                    opticsPrimary,
+                    fStop,
+                    opticsSecondaryRMS,
+                    config,
+                    telePositionPairList);
 
             boolean saveSuccess = saveObservingProgram(op);
 
@@ -233,7 +239,7 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
             if (saveSuccess) {
-                sp.setStatus(AbstractSciencePlan.STATUS.READY_FOR_OBSERVATION);
+                sp.setStatus(AbstractSciencePlan.STATUS.RUNNING);
                 System.out.println(formatter.format(creationDateTime) + " Observing Program successfully created and saved for Science Plan: " + sp.getPlanNo() + " by Observer: " + so.getFirstName() + " " + so.getLastName());
             } else {
                 System.out.println(formatter.format(creationDateTime) + " Observing Program created but save to DB failed for Science Plan: " + sp.getPlanNo());
@@ -247,7 +253,7 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
             return null;
         }
     }
-
+        
     @Override
     public boolean saveObservingProgram(AbstractObservingProgram op) {
         return true;
