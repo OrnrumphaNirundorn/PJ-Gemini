@@ -38,7 +38,6 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
 
     @Override
     public void deleteAllSciencePlans() {
-
     }
 
     @Override
@@ -112,7 +111,15 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
     }
 
     @Override
-    public ObservingProgram createObservingProgram(AbstractSciencePlan sp, String opticsPrimary, double fStop, double opticsSecondaryRMS, double scienceFoldMirrorDegree, ObservingProgramConfigs.FoldMirrorType scienceFoldMirrorType, int moduleContent, ObservingProgramConfigs.CalibrationUnit calibrationUnit, ObservingProgramConfigs.LightType lightType, AbstractTelePositionPair[] telePositionPair, ScienceObserver so) {
+    public void getDefaultConfiguration() throws IOException {
+    }
+
+    @Override
+    public void getCurrentConfiguration() throws IOException {
+    }
+
+    @Override
+    public String updateConfiguration() throws FileNotFoundException {
         return null;
     }
 
@@ -135,7 +142,7 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
 
         if (!isPlanComplete || !isLocationMatch || !isDateMatch) {
             sp.setStatus(AbstractSciencePlan.STATUS.INVALIDATED);
-            System.out.println("Plan number: " + sp.getPlanNo() + " is rejected by " + so.getFirstName() + " " + so.getLastName());
+            System.out.println("Plan number: " + sp.getPlanNo() + " is rejected by " + so.getFirstName() + " " + so.getLastName() + " (Invalidated)");
             return (SciencePlan) sp;
         }
 
@@ -143,32 +150,111 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
         sp.setStatus(AbstractSciencePlan.STATUS.VALIDATED);
-        System.out.println(formatter.format(validatedDateTime) + " Plan number: " + sp.getPlanNo() + " is validated by " + so.getFirstName() + " " + so.getLastName());
+        System.out.println(formatter.format(validatedDateTime) + " Plan number: " + sp.getPlanNo() + " is validated by " + so.getFirstName() + " " + so.getLastName() + " (Validated)");
         return (SciencePlan) sp;
     }
 
     @Override
+    public ObservingProgram createObservingProgram(
+            AbstractSciencePlan sp,
+            String opticsPrimary,
+            double fStop,
+            double opticsSecondaryRMS,
+            double scienceFoldMirrorDegree,
+            ObservingProgramConfigs.FoldMirrorType scienceFoldMirrorType,
+            int moduleContent,
+            ObservingProgramConfigs.CalibrationUnit calibrationUnit,
+            ObservingProgramConfigs.LightType lightType,
+            AbstractTelePositionPair[] telePositionPair,
+            ScienceObserver so) {
+
+        if (sp.getStatus() != AbstractSciencePlan.STATUS.VALIDATED) {
+            System.out.println("Error: Observing Program creation failed. Science Plan " + sp.getPlanNo() + " must be VALIDATED first (Current status: " + sp.getStatus() + ").");
+            return null;
+        }
+
+        String telescope = sp.getTelescope();
+        boolean isNorth = telescope.equals("Hawaii") || telescope.equals("Gemini North");
+        boolean isSouth = telescope.equals("Chile") || telescope.equals("Gemini South");
+        String locationName = isNorth ? "Gemini North (Mauna Kea, Hawaii)" : "Gemini South (Cerro Pachón, Chile)";
+
+        if (!isNorth && !isSouth) {
+            System.out.println("Error: Science Plan " + sp.getPlanNo() + " has an unknown or unmapped telescope location: " + telescope);
+            return null;
+        }
+
+        boolean isValid = true;
+        StringBuilder validationMessages = new StringBuilder();
+
+        String expectedOptics = isNorth ? "GNZ" : "GSZ";
+        if (!opticsPrimary.equals(expectedOptics)) {
+            isValid = false;
+            validationMessages.append(" - Invalid Optics Primary '").append(opticsPrimary).append("'. Expected: ").append(expectedOptics).append(" for ").append(locationName).append(".\n");
+        }
+
+        double minFStop = isNorth ? 1.8 : 2.9;
+        double maxFStop = isNorth ? 8.1 : 18.0;
+        if (fStop < minFStop || fStop > maxFStop) {
+            isValid = false;
+            validationMessages.append(" - Invalid F-Stop ").append(fStop).append(". Expected range for ").append(opticsPrimary).append(": [").append(minFStop).append(", ").append(maxFStop).append("].\n");
+        }
+
+        double minRMS = 5.0;
+        double maxRMS = isNorth ? 17.0 : 13.0;
+        if (opticsSecondaryRMS < minRMS || opticsSecondaryRMS > maxRMS) {
+            isValid = false;
+            validationMessages.append(" - Invalid Optics Secondary RMS ").append(opticsSecondaryRMS).append(" nm. Expected range for ").append(locationName).append(": [").append(minRMS).append(", ").append(maxRMS).append("] nm.\n");
+        }
+
+        if (scienceFoldMirrorDegree < 30.0 || scienceFoldMirrorDegree > 45.0) {
+            isValid = false;
+            validationMessages.append(" - Invalid Science Fold Mirror Degree ").append(scienceFoldMirrorDegree).append(" degrees. Expected range: [30.0, 45.0].\n");
+        }
+
+        if (moduleContent < 1 || moduleContent > 4) {
+            isValid = false;
+            validationMessages.append(" - Invalid Module Content value ").append(moduleContent).append(". Expected values: 1, 2, 3, or 4.\n");
+        }
+        
+        if (telePositionPair == null || telePositionPair.length == 0) {
+            isValid = false;
+            validationMessages.append(" - Tele Position Pair list is missing or empty. This is required for telescope movement.\n");
+        }
+
+        if (isValid) {
+            ObservingProgram op = new ObservingProgram(sp, opticsPrimary, fStop, opticsSecondaryRMS,
+                                                       scienceFoldMirrorDegree, scienceFoldMirrorType,
+                                                       moduleContent, calibrationUnit, lightType,
+                                                       telePositionPair, so.getAstronomerID());
+
+            boolean saveSuccess = saveObservingProgram(op);
+
+            LocalDateTime creationDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+            if (saveSuccess) {
+                sp.setStatus(AbstractSciencePlan.STATUS.READY_FOR_OBSERVATION);
+                System.out.println(formatter.format(creationDateTime) + " Observing Program successfully created and saved for Science Plan: " + sp.getPlanNo() + " by Observer: " + so.getFirstName() + " " + so.getLastName());
+            } else {
+                System.out.println(formatter.format(creationDateTime) + " Observing Program created but save to DB failed for Science Plan: " + sp.getPlanNo());
+            }
+
+            return op;
+
+        } else {
+            System.out.println("Observing Program creation failed for Science Plan " + sp.getPlanNo() + " due to invalid data:");
+            System.out.println(validationMessages.toString());
+            return null;
+        }
+    }
+
+    @Override
     public boolean saveObservingProgram(AbstractObservingProgram op) {
-        return false;
+        return true;
     }
 
     @Override
     public ObservingProgram getObservingProgramBySciencePlan(AbstractSciencePlan sp) {
-        return null;
-    }
-
-    @Override
-    public void getDefaultConfiguration() throws IOException {
-
-    }
-
-    @Override
-    public void getCurrentConfiguration() throws IOException {
-
-    }
-
-    @Override
-    public String updateConfiguration() throws FileNotFoundException {
         return null;
     }
 }
