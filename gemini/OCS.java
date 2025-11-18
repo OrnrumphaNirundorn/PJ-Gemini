@@ -233,7 +233,7 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
 
         if (!isPlanComplete || !isLocationMatch || !isDateMatch) {
             sp.setStatus(AbstractSciencePlan.STATUS.INVALIDATED);
-            System.out.println("Display: " + "Validate failed.");
+            System.out.println("Display: Validate failed.");
             System.out.println("Saved log: " + formatter.format(validatedDateTime) + "Plan number: " + sp.getPlanNo() + " is rejected by " + so.getFirstName() + " " + so.getLastName());
             return (SciencePlan) sp;
         }
