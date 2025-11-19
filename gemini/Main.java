@@ -69,5 +69,60 @@ public class Main {
 
         System.out.println(validatedSciencePlan.getPlanNo() + " " + validatedSciencePlan.getPlanName() + " " + validatedSciencePlan.getStatus());
     }
+        private static void testCreateObservingProgramSuccess(SciencePlan validatedPlan) {
+        ScienceObserver observer = new ScienceObserver();
+        observer.setFirstName("Successful");
+        observer.setLastName("Creator");
+        observer.setId(10); 
+
+        OCS ocs = new OCS();
+
+        AbstractTelePositionPair[] telePairs = { new TelePositionPair() };
+
+        ObservingProgram op = ocs.createObservingProgram(
+                validatedPlan,
+                "GSZ",
+                5.0,
+                10.0,
+                40.0,
+                FoldMirrorType.REFLECTIVE_CONVERGING,
+                2,
+                CalibrationUnit.ARGON,
+                LightType.CERRO_PACHON_SKY_EMISSION,
+                telePairs,
+                observer
+        );
+
+        System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+        System.out.println("  Plan Status After Creation: " + validatedPlan.getStatus());
+    }
+
+    private static void testCreateObservingProgramFailure(SciencePlan validatedPlan) {
+        ScienceObserver observer = new ScienceObserver();
+        observer.setFirstName("Failing");
+        observer.setLastName("Creator");
+        observer.setId(11);
+
+        OCS ocs = new OCS();
+
+        AbstractTelePositionPair[] telePairs = { new TelePositionPair() };
+
+        ObservingProgram op = ocs.createObservingProgram(
+                validatedPlan,
+                "GSZ",
+                20.0, 
+                10.0,
+                40.0,
+                FoldMirrorType.REFLECTIVE_CONVERGING,
+                2,
+                CalibrationUnit.ARGON,
+                LightType.CERRO_PACHON_SKY_EMISSION,
+                telePairs,
+                observer
+        );
+
+        System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+        System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
+    }
 }
 
