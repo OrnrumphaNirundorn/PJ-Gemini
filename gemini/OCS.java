@@ -212,6 +212,32 @@ public class OCS implements GeminiAPI<SciencePlan, ObservingProgram, ObservingPr
     }
 
     @Override
+    public boolean saveObservingProgram(AbstractObservingProgram op) {
+        return true;
+    }
+
+    @Override
+    public ObservingProgram getObservingProgramBySciencePlan(AbstractSciencePlan sp) {
+        return null;
+    }
+    public boolean submitObservingProgram(AbstractObservingProgram op) {
+        AbstractSciencePlan sp = op.getSciencePlan();
+        
+        if (sp.getStatus() != AbstractSciencePlan.STATUS.valueOf("DRAFT_PROGRAM")) {
+            System.out.println("Error: Cannot submit Observing Program for Plan " + sp.getPlanNo() + ". Must be in DRAFT_PROGRAM status (Current: " + sp.getStatus() + ").");
+            return false;
+        }
+
+        sp.setStatus(AbstractSciencePlan.STATUS.READY_FOR_OBSERVATION);
+        
+        LocalDateTime submissionDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        
+        System.out.println(formatter.format(submissionDateTime) + " Observing Program SUBMITTED for Science Plan: " + sp.getPlanNo() + ". Status set to READY_FOR_OBSERVATION.");
+        return true;
+    }
+
+    @Override
     public SciencePlan validateSciencePlan(AbstractSciencePlan sp, ScienceObserver so) {
         boolean isPlanComplete = sp.getPlanNo() > 0
                 && sp.getPlanName() != null
