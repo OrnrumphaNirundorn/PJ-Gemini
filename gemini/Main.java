@@ -71,8 +71,8 @@ public class Main {
     }
         private static void testCreateObservingProgramSuccess(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
-        observer.setFirstName("Successful");
-        observer.setLastName("Creator");
+        observer.setFirstName("Shi");
+        observer.setLastName("Sha");
         observer.setId(10); 
 
         OCS ocs = new OCS();
@@ -99,8 +99,8 @@ public class Main {
 
     private static void testCreateObservingProgramFailure(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
-        observer.setFirstName("Failing");
-        observer.setLastName("Creator");
+        observer.setFirstName("Ploy");
+        observer.setLastName("Sod");
         observer.setId(11);
 
         OCS ocs = new OCS();
