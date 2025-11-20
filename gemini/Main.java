@@ -69,6 +69,7 @@ public class Main {
 
         System.out.println(validatedSciencePlan.getPlanNo() + " " + validatedSciencePlan.getPlanName() + " " + validatedSciencePlan.getStatus());
     }
+        @Test
         private static void testCreateObservingProgramSuccess(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
         observer.setFirstName("Shi");
@@ -96,7 +97,7 @@ public class Main {
         System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
         System.out.println("  Plan Status After Creation: " + validatedPlan.getStatus());
     }
-
+    @Test
     private static void testCreateObservingProgramFailure1(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
         observer.setFirstName("Ploy");
@@ -124,6 +125,7 @@ public class Main {
         System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
         System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
     }
+    @Test
     private static void testCreateObservingProgramFailure2(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
         observer.setFirstName("J");
@@ -150,6 +152,7 @@ public class Main {
         System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
         System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
     }
+    @Test
     private static void testCreateObservingProgramFailure3(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
         observer.setFirstName("To");
@@ -177,6 +180,7 @@ public class Main {
         System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
         System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
     }
+    @Test
     private static void testCreateObservingProgramFailure4(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
         observer.setFirstName("Ni");
@@ -204,6 +208,7 @@ public class Main {
         System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
         System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
     }
+    @Test
     private static void testCreateObservingProgramFailure5(SciencePlan validatedPlan) {
     System.out.println("\n--- Test 6");
     ScienceObserver observer = new ScienceObserver();
@@ -232,4 +237,33 @@ public class Main {
     System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
     System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
     }
+    @Test
+    private static void testCreateObservingProgramFailure6(SciencePlan validatedPlan) {
+    ScienceObserver observer = new ScienceObserver();
+    observer.setFirstName("Sh");
+    observer.setLastName("iSha");
+    observer.setId(15);
+
+    OCS ocs = new OCS();
+
+    // หา array สำคัญไม่เจอ
+    AbstractTelePositionPair[] telePairs = null; //หา telePairs ไม่เจอ
+
+    ObservingProgram op = ocs.createObservingProgram(
+        validatedPlan,
+        "GSZ",
+        5.0,
+        10.0,
+        40.0,
+        FoldMirrorType.REFLECTIVE_CONVERGING,
+        2,
+        CalibrationUnit.ARGON,
+        LightType.CERRO_PACHON_SKY_EMISSION,
+        telePairs, // ตัวนี้มีค่าเปน null จากข้างบนที่หาม่เจอ
+        observer
+    );
+
+    System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+    System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
+}
 }
