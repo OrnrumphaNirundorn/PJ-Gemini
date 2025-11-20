@@ -97,7 +97,7 @@ public class Main {
         System.out.println("  Plan Status After Creation: " + validatedPlan.getStatus());
     }
 
-    private static void testCreateObservingProgramFailure(SciencePlan validatedPlan) {
+    private static void testCreateObservingProgramFailure1(SciencePlan validatedPlan) {
         ScienceObserver observer = new ScienceObserver();
         observer.setFirstName("Ploy");
         observer.setLastName("Sod");
@@ -124,5 +124,112 @@ public class Main {
         System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
         System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
     }
-}
+    private static void testCreateObservingProgramFailure2(SciencePlan validatedPlan) {
+        ScienceObserver observer = new ScienceObserver();
+        observer.setFirstName("J");
+        observer.setLastName("J");
+        observer.setId(12);
 
+        OCS ocs = new OCS();
+
+        AbstractTelePositionPair[] telePairs = { new TelePositionPair() };
+        ObservingProgram op = ocs.createObservingProgram(
+                validatedPlan,
+                "GSZ",
+                200.0, //Wavelength สูงเกินไป
+                10.0,
+                40.0,
+                FoldMirrorType.REFLECTIVE_CONVERGING,
+                2,
+                CalibrationUnit.ARGON,
+                LightType.CERRO_PACHON_SKY_EMISSION,
+                telePairs,
+                observer
+        );
+
+        System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+        System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
+    }
+    private static void testCreateObservingProgramFailure3(SciencePlan validatedPlan) {
+        ScienceObserver observer = new ScienceObserver();
+        observer.setFirstName("To");
+        observer.setLastName("on");
+        observer.setId(13);
+
+        OCS ocs = new OCS();
+
+        AbstractTelePositionPair[] telePairs = { new TelePositionPair() };
+
+        ObservingProgram op = ocs.createObservingProgram(
+                validatedPlan,
+                "XYZ", //ใช้ code ผิด plan ไม่ซัพพอต
+                5.0,
+                10.0,
+                40.0,
+                FoldMirrorType.REFLECTIVE_CONVERGING,
+                2,
+                CalibrationUnit.ARGON,
+                LightType.CERRO_PACHON_SKY_EMISSION,
+                telePairs,
+                observer
+        );
+
+        System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+        System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
+    }
+    private static void testCreateObservingProgramFailure4(SciencePlan validatedPlan) {
+        ScienceObserver observer = new ScienceObserver();
+        observer.setFirstName("Ni");
+        observer.setLastName("Ne");
+        observer.setId(0); //ไอดีผิดหรือไม่มีไอดี
+
+        OCS ocs = new OCS();
+
+        AbstractTelePositionPair[] telePairs = { new TelePositionPair() };
+
+        ObservingProgram op = ocs.createObservingProgram(
+                validatedPlan,
+                "GSZ",
+                5.0,
+                10.0,
+                40.0,
+                FoldMirrorType.REFLECTIVE_CONVERGING,
+                2,
+                CalibrationUnit.ARGON,
+                LightType.CERRO_PACHON_SKY_EMISSION,
+                telePairs,
+                observer
+        );
+
+        System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+        System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
+    }
+    private static void testCreateObservingProgramFailure5(SciencePlan validatedPlan) {
+    System.out.println("\n--- Test 6");
+    ScienceObserver observer = new ScienceObserver();
+    observer.setFirstName("jay");
+    observer.setLastName("jay");
+    observer.setId(14);
+
+    OCS ocs = new OCS();
+
+    AbstractTelePositionPair[] telePairs = { new TelePositionPair() };
+
+    ObservingProgram op = ocs.createObservingProgram(
+        validatedPlan,
+        "GSZ",
+        5.0,
+        0.0, //Exposure time ต้องมีค่า >0 เสมอ
+        40.0,
+        FoldMirrorType.REFLECTIVE_CONVERGING,
+        2,
+        CalibrationUnit.ARGON,
+        LightType.CERRO_PACHON_SKY_EMISSION,
+        telePairs,
+        observer
+    );
+
+    System.out.println("  Creation Status: " + (op != null ? "SUCCESS" : "FAILURE"));
+    System.out.println("  Plan Status After Attempt: " + validatedPlan.getStatus());
+    }
+}
