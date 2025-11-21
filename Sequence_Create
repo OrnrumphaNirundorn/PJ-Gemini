@@ -1,0 +1,52 @@
+sequenceDiagram
+    actor A as Astronomer
+    participant UI as Science Plan UI
+    participant OCS as OCS Backend
+    participant StarDB as Star Catalogue
+    participant SchedDB as Telescope Schedule DB
+    participant Legacy as Legacy OCS
+
+    A->>UI: Click "Create Science Plan" menu
+    UI-->>A: Show Create Science Plan page
+    A->>UI: Click "Create New Science Plan"
+    UI->>OCS: requestNewSciencePlan()
+    OCS-->>UI: New SciencePlan template\n(PlanID, Creator pre-filled)
+    UI-->>A: Show Science Plan form
+
+    A->>UI: Fill plan details\n(Name, Funding, Objective, Dates, Telescope)
+    A->>UI: Select target from list
+    UI->>StarDB: getTargets()
+    StarDB-->>UI: Target list
+    A->>UI: Choose target
+
+    A->>UI: Set data processing options\n(FileType, Quality, ColorType, etc.)
+
+    A->>UI: Click "Save Science Plan"
+    UI->>OCS: createSciencePlan(sciencePlan, astronomer)
+
+    OCS->>StarDB: verifyTarget(target)
+    StarDB-->>OCS: ok / not found
+
+    OCS->>SchedDB: checkSchedule(telescope, startDate, endDate)
+    SchedDB-->>OCS: ok / conflict
+
+    OCS->>Legacy: checkCompatibility(sciencePlan)
+    Legacy-->>OCS: compatible / incompatible
+
+    OCS->>OCS: Validate fields, dates,\nfunding, numeric ranges,\nname uniqueness, dependencies
+
+    alt All checks pass
+        OCS-->>UI: success("Science plan saved.")
+        UI-->>A: Show confirmation and saved plan
+    else Some validation fails
+        OCS-->>UI: error(message): missing fields, start date after end date, negative funding, date conflicts, target not found, invalid numeric values, incompatible with legacy OCS, missing dependent fields, network/system error
+
+        UI-->>A: Show error and keep form
+    end
+
+    opt Save as Draft
+        A->>UI: Click "Save as Draft"
+        UI->>OCS: saveDraft(sciencePlan, astronomer)
+        OCS-->>UI: success("Draft saved.")
+        UI-->>A: Show "Draft saved" message
+    end
